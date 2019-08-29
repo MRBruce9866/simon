@@ -1,0 +1,7 @@
+.simon{
+    /* display: none; */
+    position: relative;
+    width: 640px;
+    height: 640px;;
+    background: url(../../assets/images/simonShell640x640.png);
+}
