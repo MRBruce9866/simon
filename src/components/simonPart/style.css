@@ -1,0 +1,31 @@
+.simonPart{
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: url(./assets/images/frame.png) no-repeat;
+    transition: top 1s, left 1s, right 1s, bottom 1s;
+}
+
+.topLeft{
+    top: 0%;
+    left: 0%;
+    transform: rotate(0deg);
+}
+
+.topRight{
+    top: 0%;
+    right: 0%;
+    transform: rotate(90deg);
+}
+
+.btmLeft{
+    bottom: 0%;
+    left: 0%;
+    transform: rotate(270deg);
+}
+
+.btmRight{
+    bottom: 0%;
+    right: 0%;
+    transform: rotate(180deg);
+}
