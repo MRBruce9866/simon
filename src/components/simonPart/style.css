@@ -7,26 +7,51 @@
     transition: top 1s, left 1s, right 1s, bottom 1s;
 }
 
-.topLeft{
+.topLeft.closeArm{
     top: 0%;
     left: 0%;
     transform: rotate(0deg);
 }
 
-.topRight{
+.topRight.closeArm{
     top: 0%;
     right: 0%;
     transform: rotate(90deg);
 }
 
-.btmLeft{
+.btmLeft.closeArm{
     bottom: 0%;
     left: 0%;
     transform: rotate(270deg);
 }
 
-.btmRight{
+.btmRight.closeArm{
     bottom: 0%;
     right: 0%;
     transform: rotate(180deg);
 }
+
+.topLeft.openArm{
+    top: -6%;
+    left: -6%;
+    transform: rotate(0deg);
+}
+
+.topRight.openArm{
+    top: -6%;
+    right: -6%;
+    transform: rotate(90deg);
+}
+
+.btmLeft.openArm{
+    bottom: -6%;
+    left: -6%;
+    transform: rotate(270deg);
+}
+
+.btmRight.openArm{
+    bottom: -6%;
+    right: -6%;
+    transform: rotate(180deg);
+}
+

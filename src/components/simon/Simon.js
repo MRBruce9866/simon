@@ -6,98 +6,60 @@ import './style.css';
 class Simon extends React.Component {
 
   state = {
-    closePosition: 0,
-    openPostion: 6,
-    opened: false,
+    
     greenLight: false,
     redLight: false,
     yellowLight: false,
     blueLight: false,
     whiteLight: false,
+    topLeft: false,
+    topRight: false,
+    btmLeft: false,
+    btmRight: false,
     allowInput: false,
-    lights: ['greenLight', 'redLight', 'blueLight', 'yellowLight', 'whiteLight']
     
+  }
 
+
+  game = {
+    lights: ['greenLight', 'redLight', 'blueLight', 'yellowLight', 'whiteLight'],
+    arms: ['topLeft', 'topRight', 'btmRight', 'btmLeft'],
   }
   
   componentDidMount(){
-    // this.flashy();
-    this.flashy2();
   }
 
-  flashy(){
-    let index = 0;
-    setInterval(()=>{
-      index++;
-      if(index >= this.state.lights.length-1) index = 0;
-      this.turnLightOn(this.state.lights[index]);
-      if(index % 2 === 0)
-        this.turnLightOn('whiteLight');
-      setTimeout(()=>{
-        this.turnLightOff(this.state.lights[index]);
-        this.turnLightOff('whiteLight');
-      }, 180)
-    },200)
+
+  closeArm(name){
+    this.setState({
+      [name]: false
+    })
   }
 
-  flashy2(){
-    setInterval(()=>{
-      this.open();
-      setTimeout(()=>{
-        this.close();
-      }, 1000)
-    },2000)
+  openArm(name){
+    this.setState({
+      [name]: true
+    })
   }
 
-  open(){
-    if(!this.state.opened){
-      const topLeft = document.getElementById('topLeft');
-      const topRight = document.getElementById('topRight');
-      const btmLeft = document.getElementById('btmLeft');
-      const btmRight = document.getElementById('btmRight');
-
-      topLeft.style.top = `-${this.state.openPostion}%`;
-      topLeft.style.left = `-${this.state.openPostion}%`;
-
-      topRight.style.top = `-${this.state.openPostion}%`;
-      topRight.style.right = `-${this.state.openPostion}%`;
-
-      btmLeft.style.bottom = `-${this.state.openPostion}%`;
-      btmLeft.style.left = `-${this.state.openPostion}%`;
-
-      btmRight.style.bottom = `-${this.state.openPostion}%`;
-      btmRight.style.right = `-${this.state.openPostion}%`;
-      this.setState({opened: true});
-    }
-      
-
+  closeAll(){
+    this.setState({
+      topLeft: false,
+      topRight: false,
+      btmRight: false,
+      btmLeft: false,
+    })
   }
 
-  close(){
-    if(this.state.opened){
-      const topLeft = document.getElementById('topLeft');
-      const topRight = document.getElementById('topRight');
-      const btmLeft = document.getElementById('btmLeft');
-      const btmRight = document.getElementById('btmRight');
-  
-      topLeft.style.top = `-${this.state.closePosition}%`;
-      topLeft.style.left = `-${this.state.closePosition}%`;
-  
-      topRight.style.top = `-${this.state.closePosition}%`;
-      topRight.style.right = `-${this.state.closePosition}%`;
-  
-      btmLeft.style.bottom = `-${this.state.closePosition}%`;
-      btmLeft.style.left = `-${this.state.closePosition}%`;
-  
-      btmRight.style.bottom = `-${this.state.closePosition}%`;
-      btmRight.style.right = `-${this.state.closePosition}%`;
-      this.setState({opened: false});
-    }
-}
+  openAll(){
+    this.setState({
+      topLeft: true,
+      topRight: true,
+      btmRight: true,
+      btmLeft: true,
+    })
+  }
 
-toggle(){
-  this.state.opened ? this.close() : this.open();
-}
 
 turnLightOn(name){
   this.setState({[name]: true});
@@ -143,10 +105,10 @@ turnRandomLightOn(){
       <div className="simon">
         
           <SimonCenter position='center' color='white' lightOn={this.state.whiteLight}/>
-          <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight}/>
-          <SimonPart position='topRight' color='red' lightOn={this.state.redLight}/>
-          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight}/>
-          <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight}/>
+          <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight} open={this.state.topLeft}/>
+          <SimonPart position='topRight' color='red' lightOn={this.state.redLight} open={this.state.topRight}/>
+          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight} open={this.state.btmLeft}/>
+          <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight} open={this.state.btmRight}/>
         
       </div>
     )
