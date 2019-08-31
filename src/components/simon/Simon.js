@@ -1,5 +1,6 @@
 import React from 'react';
 import SimonPart from '../simonPart/SimonPart'
+import SimonCenter from '../simonCenter/SimonCenter'
 import './style.css';
 
 class Simon extends React.Component {
@@ -12,14 +13,15 @@ class Simon extends React.Component {
     redLight: false,
     yellowLight: false,
     blueLight: false,
+    whiteLight: false,
     allowInput: false,
-    lights: ['greenLight', 'redLight', 'blueLight', 'yellowLight']
+    lights: ['greenLight', 'redLight', 'blueLight', 'yellowLight', 'whiteLight']
     
 
   }
   
   componentDidMount(){
-    this.flashy();
+    // this.flashy();
     this.flashy2();
   }
 
@@ -27,10 +29,13 @@ class Simon extends React.Component {
     let index = 0;
     setInterval(()=>{
       index++;
-      if(index >= this.state.lights.length) index = 0;
+      if(index >= this.state.lights.length-1) index = 0;
       this.turnLightOn(this.state.lights[index]);
+      if(index % 2 === 0)
+        this.turnLightOn('whiteLight');
       setTimeout(()=>{
         this.turnLightOff(this.state.lights[index]);
+        this.turnLightOff('whiteLight');
       }, 180)
     },200)
   }
@@ -136,11 +141,13 @@ turnRandomLightOn(){
   render(){
     return (
       <div className="simon">
-        {/* <button className='zUp' onClick={()=> this.toggle()}>Open</button> */}
+        
+          <SimonCenter position='center' color='white' lightOn={this.state.whiteLight}/>
           <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight}/>
           <SimonPart position='topRight' color='red' lightOn={this.state.redLight}/>
           <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight}/>
           <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight}/>
+        
       </div>
     )
   }

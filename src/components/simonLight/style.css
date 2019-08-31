@@ -1,22 +1,33 @@
 .simonLight{
     width: 100%;
     height: 100%;
+    
 }
 
 .green{
     background: url(./assets/images/green.png) no-repeat;
+    background-size: contain;
+    
 }
 
 .red{
     background: url(./assets/images/red.png) no-repeat;
+    background-size: contain;
 }
 
 .yellow{
     background: url(./assets/images/yellow.png) no-repeat;
+    background-size: contain;
 }
 
 .blue{
     background: url(./assets/images/blue.png) no-repeat;
+    background-size: contain;
+}
+
+.white{
+    background: url(./assets/images/white.png) no-repeat;
+    background-size: contain;
 }
 
 .simonLight.off{

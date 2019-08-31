@@ -9,6 +9,12 @@ function App() {
         <div className="col-12">
           <Simon/>
         </div>
+        <div className="col-12">
+          <Simon/>
+        </div>
+        <div className="col-12">
+          <Simon/>
+        </div>
       </div>
     </div>
     

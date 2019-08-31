@@ -1,0 +1,15 @@
+.simonCenter{
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: url(./assets/images/frame.png) no-repeat;
+    background-size: contain;
+    transition: top 1s, left 1s, right 1s, bottom 1s;
+}
+
+.center{
+    position: absolute;
+    transform-origin: 50% 50%;
+    top: 25%;
+    left: 25%;
+}

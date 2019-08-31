@@ -1,13 +1,23 @@
 .simon{
-
     position: relative;
-    width: 640px;
-    height: 640px;
-    background: url(./assets/images/frame.png) center no-repeat;
-    background-size: 50% 50%;
+    width: 64px;
+    height: 64px;
+    
 }
 
 .zUp{
     position: relative;
     z-index: 20;
+}
+
+.simon:hover{
+    animation: spin 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+}
+
+@keyframes spin{
+    0%{transform: rotate(0deg)}
+    100%{transform: rotate(360deg)}
 }
