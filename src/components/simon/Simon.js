@@ -38,7 +38,7 @@ class Simon extends React.Component {
     },
     {
       light: 'whiteLight',
-      sound: 1
+      sound: 4
     },
   ],
     arms: ['topLeft', 'topRight', 'btmRight', 'btmLeft'],
@@ -47,10 +47,21 @@ class Simon extends React.Component {
   }
   
   componentDidMount(){
-    this.loadSounds();
-    setTimeout(()=>{
-      this.playSequence(0);
-    }, 1000);
+    // this.game.sequence = [];
+    // for (let i = 0; i < 5; i++) {
+    //   this.game.sequence.push(Math.floor(Math.random()*5))
+    // }
+    // this.loadSounds();
+    // setTimeout(()=>{
+    //   this.playSequence(0);
+    // }, 1000);
+  }
+
+  handleButtonPress(color) {
+    console.log(color);
+    
+    console.log(this)
+  
   }
 
   loadSounds(){
@@ -67,6 +78,9 @@ class Simon extends React.Component {
       sound = new Audio();
       sound.src = './sounds/yoshi-spit.wav'
       this.game.audio.push(sound);
+      sound = new Audio();
+      sound.src = './sounds/oneUp.wav'
+      this.game.audio.push(sound);
     }
     
   }
@@ -79,21 +93,21 @@ class Simon extends React.Component {
   }
 
   playSequence(index, cb = ()=>console.log('Done')){
-    const {lights, sequence} = this.game;
+    const {sequence} = this.game;
     console.log(index)
     if(index < sequence.length){
-      this.turnLightOn(lights[sequence[index]]);
+      this.turnLightOn(sequence[index]);
       setTimeout(()=>{
-        this.turnLightOff(lights[sequence[index]]);
+        this.turnLightOff(sequence[index]);
         index++;
         console.log(index)
         
         this.playSequence(index);
-      }, 300);
+      }, 1000);
      
     }else{
       cb();
-      this.turnLightOn('whiteLight');
+      this.turnLightOn(4);
       this.openAll();
     }
     
@@ -130,13 +144,14 @@ class Simon extends React.Component {
   }
 
 
-turnLightOn(light){
-  
+turnLightOn(index){
+  let light = this.game.lights[index]
   this.playSound(light.sound);
   this.setState({[light.light]: true});
 }
 
-turnLightOff(light){
+turnLightOff(index){
+  let light = this.game.lights[index]
   this.setState({[light.light]: false});
 }
 
@@ -170,11 +185,21 @@ turnRandomLightOn(){
   render(){
     return (
       <div className="simon" id='simon'>
-          <SimonCenter position='center' color='white' lightOn={this.state.whiteLight}/>
-          <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight} open={this.state.topLeft}/>
-          <SimonPart position='topRight' color='red' lightOn={this.state.redLight} open={this.state.topRight}/>
-          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight} open={this.state.btmLeft}/>
-          <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight} open={this.state.btmRight}/>
+          <SimonCenter position='center' color='white' lightOn={this.state.whiteLight} lightClick = {this.handleButtonPress}>
+              
+          </SimonCenter>
+          <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight} open={this.state.topLeft} lightClick = {this.handleButtonPress}>
+              
+          </SimonPart>
+          <SimonPart position='topRight' color='red' lightOn={this.state.redLight} open={this.state.topRight} lightClick = {this.handleButtonPress}>
+              
+          </SimonPart>
+          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight} open={this.state.btmLeft} lightClick = {this.handleButtonPress}>
+              
+          </SimonPart>
+          <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight} open={this.state.btmRight} lightClick = {this.handleButtonPress}>
+              
+          </SimonPart>
       </div>
     )
   }
