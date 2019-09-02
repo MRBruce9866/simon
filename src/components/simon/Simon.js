@@ -4,20 +4,23 @@ import SimonCenter from '../simonCenter/SimonCenter'
 import './style.css';
 
 class Simon extends React.Component {
+  constructor(){
+    super()
+    this.state = {
+      greenLight: false,
+      redLight: false,
+      yellowLight: false,
+      blueLight: false,
+      whiteLight: false,
+      topLeft: false,
+      topRight: false,
+      btmLeft: false,
+      btmRight: false,
+      allowInput: false    
+    }
 
-  state = {
-    greenLight: false,
-    redLight: false,
-    yellowLight: false,
-    blueLight: false,
-    whiteLight: false,
-    topLeft: false,
-    topRight: false,
-    btmLeft: false,
-    btmRight: false,
-    allowInput: false    
+    this.handleButtonPress = this.handleButtonPress.bind(this)
   }
-
 
   game = {
     lights: [{
@@ -47,20 +50,18 @@ class Simon extends React.Component {
   }
   
   componentDidMount(){
-    // this.game.sequence = [];
-    // for (let i = 0; i < 5; i++) {
-    //   this.game.sequence.push(Math.floor(Math.random()*5))
-    // }
-    // this.loadSounds();
-    // setTimeout(()=>{
-    //   this.playSequence(0);
-    // }, 1000);
+    this.loadSounds();
+    this.openAll()
+  
   }
 
   handleButtonPress(color) {
-    console.log(color);
-    
-    console.log(this)
+    console.log(color)
+    let light = this.game.lights.findIndex((ele)=>{ return ele.light === color+'Light'})
+
+    console.log(light)
+
+    this.turnLightOn(light)
   
   }
 
@@ -86,6 +87,7 @@ class Simon extends React.Component {
   }
 
   playSound(index){
+    console.log(index)
     if(index >=0 && index < this.game.audio.length){
       this.game.audio[index].currentTime = 0;
       this.game.audio[index].play()
@@ -148,6 +150,10 @@ turnLightOn(index){
   let light = this.game.lights[index]
   this.playSound(light.sound);
   this.setState({[light.light]: true});
+
+  setTimeout(()=>{
+    this.turnLightOff(index);
+  }, 1000);
 }
 
 turnLightOff(index){
@@ -156,21 +162,15 @@ turnLightOff(index){
 }
 
 turnLightsOff(){
-  this.setState({
-    greenLight: false,
-    redLight: false,
-    yellowLight: false,
-    blueLight: false,
-  });
+  for (let i = 0; i < this.game.lights.length; i++) {
+    this.turnLightOff(i)
+  }
 }
 
 turnLightsOn(){
-  this.setState({
-    greenLight: true,
-    redLight: true,
-    yellowLight: true,
-    blueLight: true,
-  });
+  for (let i = 0; i < this.game.lights.length; i++) {
+    this.turnLightOn(i)
+  }
 }
 
 turnRandomLightOn(){
@@ -185,21 +185,12 @@ turnRandomLightOn(){
   render(){
     return (
       <div className="simon" id='simon'>
-          <SimonCenter position='center' color='white' lightOn={this.state.whiteLight} lightClick = {this.handleButtonPress}>
-              
-          </SimonCenter>
-          <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight} open={this.state.topLeft} lightClick = {this.handleButtonPress}>
-              
-          </SimonPart>
-          <SimonPart position='topRight' color='red' lightOn={this.state.redLight} open={this.state.topRight} lightClick = {this.handleButtonPress}>
-              
-          </SimonPart>
-          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight} open={this.state.btmLeft} lightClick = {this.handleButtonPress}>
-              
-          </SimonPart>
-          <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight} open={this.state.btmRight} lightClick = {this.handleButtonPress}>
-              
-          </SimonPart>
+          <SimonCenter position='center' color='white' lightOn={this.state.whiteLight} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='topLeft' color='green' lightOn={this.state.greenLight} open={this.state.topLeft} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='topRight' color='red' lightOn={this.state.redLight} open={this.state.topRight} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.yellowLight} open={this.state.btmLeft} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='btmRight' color='blue' lightOn={this.state.blueLight} open={this.state.btmRight} clickHandle = {this.handleButtonPress}/>
+          
       </div>
     )
   }
