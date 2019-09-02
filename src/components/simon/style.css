@@ -5,10 +5,12 @@
     height: 640px; 
 }
 
+
 .lightButton{
     position: absolute;
     transform: rotate(45deg);
     opacity: 0;
+    z-index: 1000;
     top: 8%;
     left: 35%;
     width: 40%;
