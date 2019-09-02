@@ -43,7 +43,9 @@ class Simon extends React.Component {
       },
     ],
       sequence: [],
-      audio: []
+      inputSequence: [],
+      audio: [], 
+      inputReady: true
       
     }
 
@@ -53,29 +55,77 @@ class Simon extends React.Component {
 
   
   componentDidMount(){
-    this.loadSounds();  
-
-    setInterval(()=>{
-      this.openAll()
+    this.loadSounds(()=>{
       setTimeout(()=>{
-      this.closeAll()
-      }, 1000)
-    }, 2000)
+        this.addToSequence(()=>{
+          this.playSequence()
+        },2000);
+      })
+      
+    });  
+    
+    
   }
 
   handleButtonPress(color) {
-    console.log(color)
-    let light = this.state.lights.findIndex((ele)=>{ return ele.light === color+'Light'})
-
-    console.log(light)
-    this.turnLightOn(light)
+    if(this.state.inputReady){
+      const newSequence = Array.from(this.state.inputSequence);
+      const light = this.state.lights.findIndex((ele)=>{ return ele.light === color+'Light'})
+      newSequence.push(light);
+      this.turnLightOn(light)
+      this.setState({
+        inputSequence: newSequence
+      }, ()=>{
+        if(this.doesInputMatch()){
+          console.log(this.state.inputSequence.length === this.state.sequence.length);
+          if(this.state.inputSequence.length === this.state.sequence.length){
+            console.log("You are done guessing")
+            this.setState({inputSequence: []});
+            this.closeAll();
+            this.addToSequence(()=>{
+            setTimeout(()=>{
+              this.playSequence()
+              },1500);
+            })
+          }
+        }else{
+          //gameOver
+          console.log('Game Over')
+          this.setState({
+            inputReady: false
+          }, ()=>{
+            this.closeAll();
+          })
+        }
+      })
+      
+    }
+    
   
   }
+  doesInputMatch(){
+    const {inputSequence, sequence} = this.state;
+    const length = inputSequence.length;
+    if(inputSequence.join() === sequence.slice(0,length).join()){
+      return true;
+    }else{
+      return false;
+    }
+  }
 
-  loadSounds(){
-    let audio = []
+  addToSequence(cb = ()=>{}){
+      const newSequence = Array.from(this.state.sequence);
+      newSequence.push(Math.floor(Math.random()*this.state.lights.length));
+    
+      this.setState({
+        sequence: newSequence
+      }, cb)
+    
+    
+  }
 
-    if(this.state.audio.length === 0){
+  loadSounds(cb){
+    const audio = []
       let sound = new Audio();
       sound.src = './sounds/coin.wav'
       audio.push(sound);
@@ -94,14 +144,12 @@ class Simon extends React.Component {
 
       this.setState({
         audio,
-      })
-    }
+      }, cb)
     
   }
 
   playSound(index){
-    let audio = Array.from(this.state.audio);
-    console.log(index)
+    const audio = Array.from(this.state.audio);
     if(index >=0 && index < audio.length){
       audio[index].currentTime = 0;
       this.setState({
@@ -111,29 +159,56 @@ class Simon extends React.Component {
       }
   }
 
-  playSequence(index, cb = ()=>console.log('Done')){
+  playSequence(index = 0, cb = ()=>console.log('Done')){
     const {sequence} = this.state;
-    console.log(index)
-    if(index < sequence.length){
-      this.turnLightOn(sequence[index]);
-      setTimeout(()=>{
-        this.turnLightOff(sequence[index]);
-        index++;
-        console.log(index)
+    if(this.state.inputReady){
+      this.setState({inputReady: false}, ()=>{
         
-        this.playSequence(index);
-      }, 1000);
-     
+        setTimeout(()=>{
+          if(index < sequence.length){
+            this.turnLightOn(sequence[index]);
+            setTimeout(()=>{
+              this.turnLightOff(sequence[index]);
+              index++;
+      
+              
+              this.playSequence(index);
+            }, 1000);
+           
+          }else{
+            this.openAll();
+            setTimeout(()=>{
+            this.setState({inputReady: true}, cb)
+            },1000);
+            
+          }
+        },1000);
+      })
     }else{
-      cb();
-      this.turnLightOn(4);
-      this.openAll();
+      if(index < sequence.length){
+        this.turnLightOn(sequence[index]);
+        setTimeout(()=>{
+          this.turnLightOff(sequence[index]);
+          index++;
+          this.playSequence(index);
+        }, 1000);
+       
+      }else{
+        this.openAll();
+        setTimeout(()=>{
+        this.setState({inputReady: true}, cb)
+        },1000);
+        
+        
+      }
     }
+    
+    
     
   }
 
   closeArm(index){
-    let arms = Array.from(this.state.arms);
+    const arms = Array.from(this.state.arms);
     arms[index].status = false;
     this.setState({
       arms,
@@ -141,7 +216,7 @@ class Simon extends React.Component {
   }
 
   openArm(index){
-    let arms = Array.from(this.state.arms);
+    const arms = Array.from(this.state.arms);
     arms[index].status = true;
     this.setState({
       arms,
@@ -163,8 +238,7 @@ class Simon extends React.Component {
 
 
 turnLightOn(index){
-  let lights = Array.from(this.state.lights);
-
+  const lights = Array.from(this.state.lights);
   this.playSound(lights[index].sound);
   lights[index].status = true;
   this.setState({
@@ -173,11 +247,11 @@ turnLightOn(index){
 
   setTimeout(()=>{
     this.turnLightOff(index);
-  }, 1000);
+  }, 500);
 }
 
 turnLightOff(index){
-  let lights = Array.from(this.state.lights);
+  const lights = Array.from(this.state.lights);
   lights[index].status = false;
   this.setState({
     lights,
