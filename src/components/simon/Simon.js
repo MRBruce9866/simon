@@ -89,8 +89,7 @@ class Simon extends React.Component {
             this.setState({
               inputSequence: [], 
               score: this.state.score + 1,
-               highScore: Math.max(this.state.highScore, this.state.score + 1),
-               spin: this.state.score + 1 >= 10
+               highScore: Math.max(this.state.highScore, this.state.score + 1)
               });
             this.closeAll();
             this.addToSequence(()=>{
