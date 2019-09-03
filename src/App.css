@@ -1,3 +1,11 @@
 body{
-  background: #000;
+  font-family: 'Acme', sans-serif;
+  text-shadow:
+   -2px -2px 0 #000,  
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+     2px 2px 0 #000;
+
+  background: radial-gradient(#222, #000);
 }
+

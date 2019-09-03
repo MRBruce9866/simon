@@ -10,7 +10,7 @@ function App() {
     <div className='wrapper'>
       <Jumbo/>
       <div className="container-full">
-        <div className="row text-center justify-content-center my-5">
+        <div className="row text-center justify-content-center py-5">
           <Simon/>
         </div>
       </div>
