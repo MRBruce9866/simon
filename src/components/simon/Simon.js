@@ -26,6 +26,11 @@ class Simon extends React.Component {
         light: 'yellowLight',
         status: false,
         sound: 3
+      },
+      {
+        light: 'whiteLight',
+        status: false,
+        sound: 4
       }
     ],
       arms: [{
@@ -45,39 +50,37 @@ class Simon extends React.Component {
       sequence: [],
       inputSequence: [],
       audio: [], 
-      inputReady: true
+      inputReady: false,
+      gameRunning: false
       
     }
 
     this.handleButtonPress = this.handleButtonPress.bind(this)
   }
 
-
+  intervalID;
   
   componentDidMount(){
     this.loadSounds(()=>{
-      setTimeout(()=>{
-        this.addToSequence(()=>{
-          this.playSequence()
-        },2000);
-      })
-      
+      this.resetGame();
     });  
     
     
   }
 
   handleButtonPress(color) {
-    if(this.state.inputReady){
-      const newSequence = Array.from(this.state.inputSequence);
-      const light = this.state.lights.findIndex((ele)=>{ return ele.light === color+'Light'})
-      newSequence.push(light);
-      this.turnLightOn(light)
+    const {inputReady, gameRunning, inputSequence, lights} = this.state;
+
+    if(gameRunning && inputReady){
+      const newSequence = Array.from(inputSequence);
+      const lightIndex = lights.findIndex((ele)=>{ return ele.light === color+'Light'})
+      newSequence.push(lightIndex);
+      this.turnLightOn(lightIndex)
+      console.log(newSequence)
       this.setState({
         inputSequence: newSequence
       }, ()=>{
         if(this.doesInputMatch()){
-          console.log(this.state.inputSequence.length === this.state.sequence.length);
           if(this.state.inputSequence.length === this.state.sequence.length){
             console.log("You are done guessing")
             this.setState({inputSequence: []});
@@ -85,24 +88,89 @@ class Simon extends React.Component {
             this.addToSequence(()=>{
             setTimeout(()=>{
               this.playSequence()
-              },1500);
+              },500);
             })
           }
         }else{
-          //gameOver
           console.log('Game Over')
           this.setState({
-            inputReady: false
+            inputReady: false,
+            gameRunning: false
           }, ()=>{
             this.closeAll();
+            setTimeout(()=>{
+              this.resetGame();
+            }, 1500);
+            
           })
         }
       })
-      
+    }else if(inputReady && !gameRunning && color === 'white'){
+      this.turnLightOff(4);
+      this.startUpAnimation(5, 50);
+    }
+  }
+
+  startGame(){
+    clearInterval(this.intervalID);
+    this.turnLightsOff();
+    this.setState({
+      inputReady: false,
+      gameRunning: true
+    }, ()=>{
+      this.addToSequence(()=>{
+        setTimeout(()=>{
+          this.playSequence()
+          },1500);
+        })
+    })
+  }
+
+  resetGame(){
+    this.setState({
+      inputReady: true,
+      inputSequence: [],
+      sequence: []
+    }, ()=>{
+      this.blinkLight([4]);
+    })
+  }
+
+  startUpAnimation(loops, speed=200, frame = 0){
+    clearInterval(this.intervalID)
+    if(loops > 0){
+      this.turnLightOn(frame, speed, false);
+      setTimeout(()=>{
+        frame++;
+        if(frame > 3){
+          frame = 0;
+          loops--;
+        }
+        this.startUpAnimation(loops, speed, frame);
+      }, speed)
+    }else{
+      this.blinkLight([0,1,2,3,4], 500);
+      setTimeout(()=>{
+        clearInterval(this.intervalID);
+        setTimeout(()=>{
+          this.startGame();
+        }, 1000)
+      }, 2000)
     }
     
-  
   }
+
+  blinkLight(lightArray, speed = 1000){
+    if(this.intervalID) clearInterval(this.intervalID);
+
+    this.intervalID = setInterval(()=>{
+      lightArray.forEach(light => {
+        this.turnLightOn(light, speed/2, false);
+      });  
+    }, speed);
+
+  }
+
   doesInputMatch(){
     const {inputSequence, sequence} = this.state;
     const length = inputSequence.length;
@@ -173,7 +241,7 @@ class Simon extends React.Component {
       
               
               this.playSequence(index);
-            }, 1000);
+            }, 500);
            
           }else{
             this.openAll();
@@ -191,7 +259,7 @@ class Simon extends React.Component {
           this.turnLightOff(sequence[index]);
           index++;
           this.playSequence(index);
-        }, 1000);
+        }, 500);
        
       }else{
         this.openAll();
@@ -237,17 +305,21 @@ class Simon extends React.Component {
   }
 
 
-turnLightOn(index){
+turnLightOn(index, duration = 200, playsound = true){
   const lights = Array.from(this.state.lights);
-  this.playSound(lights[index].sound);
+  if(playsound)
+    this.playSound(lights[index].sound);
   lights[index].status = true;
   this.setState({
     lights,
   });
 
-  setTimeout(()=>{
-    this.turnLightOff(index);
-  }, 500);
+  if(duration > 0){
+    setTimeout(()=>{
+      this.turnLightOff(index);
+    }, duration);
+  }
+  
 }
 
 turnLightOff(index){
@@ -259,13 +331,13 @@ turnLightOff(index){
 }
 
 turnLightsOff(){
-  for (let i = 0; i < this.game.lights.length; i++) {
+  for (let i = 0; i < this.state.lights.length; i++) {
     this.turnLightOff(i)
   }
 }
 
 turnLightsOn(){
-  for (let i = 0; i < this.game.lights.length; i++) {
+  for (let i = 0; i < this.state.lights.length; i++) {
     this.turnLightOn(i)
   }
 }
@@ -277,7 +349,7 @@ turnRandomLightOn(){
   render(){
     return (
       <div className="simon" id='simon'>
-          <SimonCenter position='center'/>
+          <SimonCenter position='center'color='white' lightOn={this.state.lights[4].status} clickHandle = {this.handleButtonPress}/>
           <SimonPart position='topLeft' color='green' lightOn={this.state.lights[0].status} open={this.state.arms[0].status} clickHandle = {this.handleButtonPress}/>
           <SimonPart position='topRight' color='red' lightOn={this.state.lights[1].status} open={this.state.arms[1].status} clickHandle = {this.handleButtonPress}/>
           <SimonPart position='btmRight' color='blue' lightOn={this.state.lights[2].status} open={this.state.arms[2].status} clickHandle = {this.handleButtonPress}/>
