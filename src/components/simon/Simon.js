@@ -1,6 +1,7 @@
 import React from 'react';
 import SimonPart from '../simonPart/SimonPart'
 import SimonCenter from '../simonCenter/SimonCenter'
+import DisplayBoard from '../displayBoard/DisplayBoard';
 import './style.css';
 
 class Simon extends React.Component {
@@ -49,7 +50,10 @@ class Simon extends React.Component {
     ],
       sequence: [],
       inputSequence: [],
-      audio: [], 
+      audio: [],
+      score: 0,
+      highScore: 10,
+      spin: false,
       inputReady: false,
       gameRunning: false
       
@@ -82,8 +86,12 @@ class Simon extends React.Component {
       }, ()=>{
         if(this.doesInputMatch()){
           if(this.state.inputSequence.length === this.state.sequence.length){
-            console.log("You are done guessing")
-            this.setState({inputSequence: []});
+            this.setState({
+              inputSequence: [], 
+              score: this.state.score + 1,
+               highScore: Math.max(this.state.highScore, this.state.score + 1),
+               spin: this.state.score + 1 >= 10
+              });
             this.closeAll();
             this.addToSequence(()=>{
             setTimeout(()=>{
@@ -106,8 +114,11 @@ class Simon extends React.Component {
         }
       })
     }else if(inputReady && !gameRunning && color === 'white'){
-      this.turnLightOff(4);
-      this.startUpAnimation(5, 50);
+      this.setState({inputReady: false}, ()=>{
+        this.turnLightOff(4);
+        this.startUpAnimation(5, 50);
+      })
+      
     }
   }
 
@@ -130,7 +141,9 @@ class Simon extends React.Component {
     this.setState({
       inputReady: true,
       inputSequence: [],
-      sequence: []
+      sequence: [],
+      score: 0,
+      spin: false
     }, ()=>{
       this.blinkLight([4]);
     })
@@ -347,16 +360,26 @@ turnRandomLightOn(){
   this.turnLightOn(index);
 }
   render(){
+    const {lights, arms, score, highScore} = this.state;
     return (
-      <div className="simon" id='simon'>
-          <SimonCenter position='center'color='white' lightOn={this.state.lights[4].status} clickHandle = {this.handleButtonPress}/>
-          <SimonPart position='topLeft' color='green' lightOn={this.state.lights[0].status} open={this.state.arms[0].status} clickHandle = {this.handleButtonPress}/>
-          <SimonPart position='topRight' color='red' lightOn={this.state.lights[1].status} open={this.state.arms[1].status} clickHandle = {this.handleButtonPress}/>
-          <SimonPart position='btmRight' color='blue' lightOn={this.state.lights[2].status} open={this.state.arms[2].status} clickHandle = {this.handleButtonPress}/>
-          <SimonPart position='btmLeft' color='yellow' lightOn={this.state.lights[3].status} open={this.state.arms[3].status} clickHandle = {this.handleButtonPress}/>
-          
-          
+      <>
+      <div className="col-12 col-lg-2">
+            <DisplayBoard title="Score"score={score}/>
+          </div>
+          <div className="col-12 col-lg-6">
+          <div className={`simon ${this.state.spin ? 'spin': ''}`} id='simon'>
+          <SimonCenter position='center'color='white' lightOn={lights[4].status} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='topLeft' color='green' lightOn={lights[0].status} open={arms[0].status} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='topRight' color='red' lightOn={lights[1].status} open={arms[1].status} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='btmRight' color='blue' lightOn={lights[2].status} open={arms[2].status} clickHandle = {this.handleButtonPress}/>
+          <SimonPart position='btmLeft' color='yellow' lightOn={lights[3].status} open={arms[3].status} clickHandle = {this.handleButtonPress}/>
       </div>
+          </div>
+          <div className="col-12 col-lg-2">
+            <DisplayBoard title="High Score" score={highScore}/>
+          </div>
+          </>
+      
     )
   }
 }

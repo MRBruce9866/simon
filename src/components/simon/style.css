@@ -1,9 +1,22 @@
 .simon{
     position: relative;
     margin: 0 auto;
-    width: 640px;
-    height: 640px; 
+    width: 75%;
+    padding-top: 75%; 
 }
+
+.simon.spin{
+    animation: spin 30s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+}
+
+@keyframes spin{
+    0%{transform: rotate(0)}
+    100%{transform: rotate(360deg)}
+}
+
 
 
 .lightButton{

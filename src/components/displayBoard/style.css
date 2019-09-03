@@ -1,0 +1,7 @@
+.displayBoard{
+    color: white;
+    width: 100%;
+    padding-top: 100%;
+    /* background: url(./assets/images/boardFrame.png) center no-repeat; */
+    background-size: 100% 100%;
+}
